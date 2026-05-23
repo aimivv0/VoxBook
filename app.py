@@ -6,12 +6,17 @@ import os, sys, json, threading, subprocess, tempfile, shutil, re, time, asyncio
 from pathlib import Path
 from flask import Flask, render_template_string, request, jsonify, send_file
 
-# Fix for PyInstaller --noconsole: redirect stdout/stderr to log file
-if getattr(sys, "frozen", False) and (sys.stdout is None or not hasattr(sys.stdout, "buffer")):
-    _log_dir = Path(os.path.expanduser("~")) / "AudioBookify"
-    _log_dir.mkdir(parents=True, exist_ok=True)
-    sys.stdout = open(_log_dir / "app.log", "w", encoding="utf-8", buffering=1)
-    sys.stderr = sys.stdout
+# 显示启动信息
+print("=" * 65)
+print("VoxBook v1.0 - 电子书转有声书工具")
+print("=" * 65)
+print()
+print("✓ 程序已启动，请勿关闭此窗口！")
+print("✓ 转换过程中请保持此命令窗口打开")
+print("✓ 浏览器将自动打开，如未打开请访问: http://127.0.0.1:7860")
+print()
+print("=" * 65)
+print()
 
 app = Flask(__name__)
 
