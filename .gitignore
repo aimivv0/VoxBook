@@ -1,0 +1,11 @@
+﻿venv/
+__pycache__/
+*.pyc
+audiobooks/
+ebooks/
+.history.json
+build/
+dist/
+*.spec
+*.log
+.env
