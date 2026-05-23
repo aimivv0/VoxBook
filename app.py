@@ -1102,22 +1102,12 @@ if __name__ == "__main__":
     # 后台下载 ffmpeg
     ensure_ffmpeg_async()
     
-    # Flask 在后台线程
-    threading.Thread(target=lambda: _start_flask_in_thread(port), daemon=True).start()
-    
-    # 等服务起来
-    time.sleep(1.5)
-    
     # 自动打开浏览器
     threading.Thread(target=open_browser_delayed, daemon=True).start()
     
-    # 系统托盘 (阻塞主线程)
-    icon = _setup_tray()
-    if icon:
-        icon.run()  # 阻塞运行
-    else:
-        # fallback: 普通运行
-        try:
-            while True: time.sleep(1)
-        except KeyboardInterrupt:
-            pass
+    # 直接在主线程运行Flask（不使用系统托盘）
+    import logging
+    logging.getLogger("werkzeug").setLevel(logging.ERROR)
+    print("\n✓ Flask 服务已启动，访问地址: http://127.0.0.1:7860")
+    print("✓ 请勿关闭此窗口\n")
+    app.run(host="127.0.0.1", port=port, debug=False, use_reloader=False, threaded=True)

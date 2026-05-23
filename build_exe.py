@@ -10,7 +10,6 @@ if not PY.exists():
 cmd = [str(PY), "-m", "PyInstaller",
     "--name", "VoxBook",
     "--onedir",
-    "--console",
     "--icon", "NONE",
     "--hidden-import", "edge_tts",
     "--hidden-import", "ebooklib",
