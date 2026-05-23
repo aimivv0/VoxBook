@@ -43,7 +43,7 @@ def load_config():
         "output_dir": str(DEFAULT_OUTPUT),
         "theme": "light",
         "language": "zh",
-        "first_run": True
+        "first_run": False
     }
     if CONFIG_FILE.exists():
         try:
@@ -810,7 +810,8 @@ document.querySelectorAll(".theme-btn[data-t]").forEach(b=>{
   });
 });
 // First run setup
-if(cfg.first_run){document.getElementById("setupOutputDir").value=cfg.output_dir;document.getElementById("welcomeModal").classList.add("show")}
+// Welcome modal disabled - user can configure via Settings if needed
+if(false&&cfg.first_run){document.getElementById("setupOutputDir").value=cfg.output_dir;document.getElementById("welcomeModal").classList.add("show")}
 function finishSetup(){const v=document.getElementById("setupOutputDir").value.trim();fetch("/setting",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({output_dir:v,first_run:false})}).then(()=>{document.getElementById("welcomeModal").classList.remove("show");loadHint()})}
 function browseFolderForSetup(){fetch("/browse_folder").then(r=>r.json()).then(d=>{if(d.path)document.getElementById("setupOutputDir").value=d.path})}
 function browseFolderForSettings(){fetch("/browse_folder").then(r=>r.json()).then(d=>{if(d.path)document.getElementById("settingsOutput").value=d.path})}
@@ -839,12 +840,12 @@ const mins=Math.round((bi.chars||0)/250);
 document.getElementById("biDuration").textContent=mins>60?Math.floor(mins/60)+"h "+mins%60+"m":mins+" min";
 }})}
 function previewVoice(){const v=document.getElementById("voiceSelect").value;fetch("/preview?voice="+v).then(r=>r.blob()).then(b=>{const a=document.getElementById("previewAudio");a.src=URL.createObjectURL(b);a.style.display="block";a.play()})}
-function startConversion(){if(!selectedFile){alert("Please select a file / 请先选择文件");return}
+function startConversion(){if(!selectedFile){showToast("Please select a file first / 请先选择文件");return}
 const btn=document.getElementById("convertBtn"),pp=document.getElementById("progressPanel"),rs=document.getElementById("resultBox");
 btn.disabled=true;btn.textContent="Converting... / 转换中...";pp.classList.add("active");rs.classList.remove("active");
 document.querySelectorAll(".step").forEach(s=>s.classList.remove("active","done"));
 const fd=new FormData();fd.append("file",selectedFile);fd.append("voice",document.getElementById("voiceSelect").value);fd.append("format",document.getElementById("outputFormat").value);fd.append("rate",document.getElementById("rateSelect").value);
-fetch("/convert",{method:"POST",body:fd}).then(r=>r.json()).then(d=>{if(d.success)pollStatus();else{alert(d.error);btn.disabled=false;btn.textContent="▶ Start / 开始转换"}})}
+fetch("/convert",{method:"POST",body:fd}).then(r=>r.json()).then(d=>{if(d.success)pollStatus();else{showToast(d.error);btn.disabled=false;btn.textContent="▶ Start / 开始转换"}})}
 function pollStatus(){fetch("/status").then(r=>r.json()).then(d=>{
 const fill=document.getElementById("progressFill"),stepName=document.getElementById("stepName"),pct=document.getElementById("pctText"),detail=document.getElementById("progressDetail"),eta=document.getElementById("etaText");
 for(let i=1;i<=3;i++){const el=document.getElementById("step"+i);el.classList.remove("active","done");if(i<d.step)el.classList.add("done");else if(i===d.step)el.classList.add("active")}
@@ -857,6 +858,8 @@ if(d.running){setTimeout(pollStatus,1500)}else{
 const btn=document.getElementById("convertBtn");btn.disabled=false;btn.textContent="▶ Start / 开始转换";
 if(d.output_file){const rs=document.getElementById("resultBox");rs.classList.add("active");document.getElementById("resultText").textContent="Saved / 已保存: "+d.output_file;document.getElementById("resultTime").textContent="⏱️ Total time / 总耗时: "+(d.total_time||"-");fill.style.width="100%";pct.textContent="100%";eta.textContent="Done";document.querySelectorAll(".step").forEach(s=>{s.classList.remove("active");s.classList.add("done")})}
 else if(d.error){detail.textContent="Error: "+d.error;eta.textContent=""}}})}
+
+function showToast(msg){let t=document.getElementById("vbToast");if(!t){t=document.createElement("div");t.id="vbToast";t.style.cssText="position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#ff7675;color:#fff;padding:12px 22px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:9999;font-size:14px;font-weight:500;transition:opacity .3s";document.body.appendChild(t)}t.textContent=msg;t.style.opacity="1";clearTimeout(t._tm);t._tm=setTimeout(()=>{t.style.opacity="0"},3500)}
 function toggleHistory(){const p=document.getElementById("historyPanel");if(p.style.display==="none"){p.style.display="block";loadHistory()}else p.style.display="none"}
 function loadHistory(){fetch("/history").then(r=>r.json()).then(d=>{
 const list=document.getElementById("historyList");
