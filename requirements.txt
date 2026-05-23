@@ -3,3 +3,5 @@ edge-tts>=6.1
 ebooklib>=0.18
 beautifulsoup4>=4.12
 lxml>=5.0
+pystray>=0.19
+pillow>=10.0

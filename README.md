@@ -1,175 +1,327 @@
-# Ebook2Audiobook
+﻿# 🎙️ VoxBook
 
-> One-click convert any ebook to a chaptered audiobook with natural AI voices. **Free**, **open source**, **no API key needed**.
+> **Turn any ebook into a chaptered audiobook in one click.** 60+ AI voices, 17 languages, completely free, runs offline-friendly. No API keys, no quotas, no fuss.
+>
+> 一键将电子书转换为带章节的有声书。60+种AI音色，17种语言，永久免费，本地运行。
 
-[![Python](https://img.shields.io/badge/Python-3.10+-blue)](https://www.python.org)
-[![License](https://img.shields.io/badge/License-MIT-green)](./LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)]()
+<p align="center">
+  <img alt="Python" src="https://img.shields.io/badge/Python-3.10+-blue?style=flat-square&logo=python">
+  <img alt="Platform" src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=flat-square">
+  <img alt="License" src="https://img.shields.io/badge/License-MIT-green?style=flat-square">
+  <img alt="Free" src="https://img.shields.io/badge/Free-Personal%20%26%20Commercial-success?style=flat-square">
+  <img alt="Downloads" src="https://img.shields.io/badge/Downloads-Get%20Started-brightgreen?style=flat-square">
+</p>
 
-## Features
+<p align="center">
+  <b>English</b> ·
+  <a href="#chinese">简体中文</a> ·
+  <a href="#features">Features</a> ·
+  <a href="#quick-start">Quick Start</a> ·
+  <a href="#voices">Voices</a> ·
+  <a href="#players">Players</a>
+</p>
 
-- **One click** - Drag, drop, convert. No CLI, no config files.
-- **30+ natural voices** - Chinese (Mandarin/Cantonese/Taiwanese) & English (US/British)
-- **Real-time progress** - Live percentage, ETA countdown, total elapsed time
-- **Smart book analysis** - Auto-detect chapters, word count, estimated duration before conversion
-- **Auto file organization** - Output as `BookTitle-Author/` with labeled files
-- **Speed control** - Adjust reading rate from -25% to +50%
-- **Cover embedding** - Extracts cover from epub and embeds into m4b
-- **History tracking** - See all your past conversions with stats
-- **M4B with chapters** - Real chapter markers, perfect for audiobook players
-- **100% free** - Uses Microsoft Edge Neural TTS (no quota, no key)
-- **Web UI** - Clean browser interface, runs locally on `127.0.0.1`
+---
 
-## Quick Start
+## ✨ Why VoxBook?
 
-### Windows
+There are many TTS tools, but VoxBook is the **only one** that combines:
 
-1. Install [Python 3.10+](https://www.python.org/downloads/) - **check "Add to PATH"** during install
-2. Install [ffmpeg](https://ffmpeg.org/download.html) (or place `ffmpeg.exe` in `./ffmpeg/`)
-3. Download this project (Code -> Download ZIP)
-4. Double-click **`setup.cmd`** (one-time install, ~2 min)
-5. Double-click **`start.cmd`** - browser opens automatically
+- 🚀 **One-click EXE** — Download, extract, double-click. Zero setup, zero dependencies.
+- 🔁 **Resume from interruption** — Computer crashed mid-conversion? Restart and pick up exactly where it stopped.
+- 🌍 **17 languages, 80+ voices** — Chinese (Mandarin/Cantonese/Taiwanese), English (US/UK), Japanese, Korean, French, German, Spanish, Italian, Portuguese, Russian, Arabic, Hindi, Vietnamese, Thai, and more.
+- 🎨 **4 beautiful themes** — Light, Dark, Sepia (paper), Ocean.
+- 📚 **Smart metadata extraction** — Auto-detects title, author, chapters, word count, estimated duration before you commit.
+- 🗂️ **Auto file organization** — Output is neatly organized into `BookTitle-Author/` folders with original/audio/text/cover all properly labeled.
+- 🖼️ **Cover art embedded** — Pulls cover from epub and embeds it into the M4B (so audiobook players show the artwork).
+- 📊 **Real-time progress** — Live percentage, chapter tracking, ETA countdown, total elapsed time.
+- 🔇 **System tray app** — Runs silently in the background. Closing the browser doesn't stop the conversion.
+- 📜 **Conversion history** — All your past conversions tracked with stats.
+- 🔒 **No API key required** — Uses Microsoft Edge Neural TTS through `edge-tts`. Free forever.
+- 💯 **Free for personal AND commercial use** — MIT licensed. Use it however you want.
 
-### macOS / Linux
+## 🎬 Demo
+
+> *(Add screenshots in `screenshots/` and embed them here)*
+
+```
+1. Drag your ebook → 2. Pick a voice → 3. Click Start → 4. Get a chaptered M4B
+```
+
+## 🚀 Quick Start
+
+### Option A — Download EXE (Windows, recommended for non-developers)
+
+1. Go to [Releases](../../releases) and download the latest `VoxBook-vX.X.zip`
+2. Extract anywhere
+3. Double-click **`Run-启动.cmd`** (or `VoxBook.exe`)
+4. The browser opens automatically. Done.
+
+> First run downloads FFmpeg (~50MB) automatically — only once.
+
+### Option B — Run from source (any OS)
 
 ```bash
-# Install ffmpeg first
-# macOS:  brew install ffmpeg
-# Ubuntu: sudo apt install ffmpeg
+git clone https://github.com/aimivv0/VoxBook.git
+cd VoxBook
 
-git clone https://github.com/YOUR_USERNAME/Ebook2Audiobook.git
-cd Ebook2Audiobook
 python -m venv venv
+# Windows: venv\Scripts\activate
 source venv/bin/activate
+
 pip install -r requirements.txt
 python app.py
-# Open http://127.0.0.1:7860
 ```
 
-### Optional: Install Calibre (for PDF/DOCX/MOBI support)
+Browser opens at `http://127.0.0.1:7860`.
 
-[Calibre](https://calibre-ebook.com/download) provides best-in-class format conversion. Without it, only `.epub` and `.txt` are supported natively.
-
-## Usage
-
-1. Run `start.cmd` (Windows) or `python app.py`
-2. Browser opens at `http://127.0.0.1:7860`
-3. Drag & drop your ebook (or click to select)
-4. View book overview: chapters, word count, estimated duration
-5. Pick a voice and speed
-6. Click "Start"
-7. Watch real-time progress with ETA
-8. Find output in `audiobooks/BookTitle-Author/`
-
-```
-audiobooks/
-└── BookTitle-Author/
-    ├── BookTitle-Author-原始.epub  (original source)
-    ├── BookTitle-Author-音频.m4b   (audiobook with chapters)
-    ├── BookTitle-Author-转换.txt   (extracted text)
-    └── BookTitle-Author-封面.jpg   (cover image)
-```
-
-## Voice List
-
-### Chinese
-| Voice | Style |
-|-------|-------|
-| **Xiaoxiao** | Warm narrator, best for novels |
-| **Yunyang** | Professional anchor, most natural |
-| Xiaoyi | Lively, cartoon style |
-| Yunxi | Sunny, novel style |
-| HsiaoChen | Taiwanese Mandarin |
-| HiuGaai | Cantonese |
-
-### English
-| Voice | Style |
-|-------|-------|
-| **Andrew** | Newest, most natural male |
-| **Ava** | Newest, most natural female |
-| Brian | Calm audiobook narrator |
-| Jenny | Warm narrator |
-| Aria | Professional |
-| Ryan | British |
-
-Run `python -m edge_tts --list-voices` to see all 60+ available.
-
-## Recommended Audiobook Players
-
-| Platform | Player | Link |
-|----------|--------|------|
-| Windows / Mac / Linux | VLC Media Player | https://www.videolan.org/vlc/ |
-| Windows / Mac | foobar2000 | https://www.foobar2000.org/ |
-| Mac / iOS | Apple Books (built-in) | Pre-installed |
-| iOS | BookPlayer (free, open source) | https://apps.apple.com/app/bookplayer/id1138219998 |
-| iOS | Prologue (premium) | https://apps.apple.com/app/prologue/id1459223267 |
-| Android | Smart AudioBook Player | https://play.google.com/store/apps/details?id=ak.alizandro.smartaudiobookplayer |
-| Android | Voice (free, open source) | https://github.com/PaulWoitaschek/Voice |
-
-> Tip: M4B format is ideal - recognized as an audiobook by all major players, with proper chapter navigation and resume support.
-
-## Tech Stack
-
-- **Backend**: Python + Flask
-- **TTS**: [edge-tts](https://github.com/rany2/edge-tts) (Microsoft Edge Neural TTS, free)
-- **Audio**: ffmpeg (concat + AAC encoding + chapter metadata)
-- **Format conversion**: Calibre (optional) + ebooklib for epub
-- **Frontend**: Vanilla HTML/CSS/JS - no build step
-
-## Build Standalone EXE (Optional)
-
-Want to ship a single `.exe` so users don't need Python?
+### Option C — Build your own EXE
 
 ```bash
 pip install pyinstaller
 python build_exe.py
+# Output in dist/VoxBook/
 ```
 
-The EXE will be in `dist/Ebook2Audiobook.exe` (~50 MB).
+## 📖 Usage
 
-> Note: ffmpeg must still be available either in PATH or in `./ffmpeg/ffmpeg.exe` next to the EXE.
+1. **Drop a file** — Drag any `.epub`, `.txt`, `.pdf`, `.docx`, or `.mobi` onto the window.
+2. **Read the overview** — VoxBook shows you chapters, word count, and estimated audiobook duration.
+3. **Pick voice & speed** — 17 languages, 80+ voices, speed from -25% to +50%.
+4. **Click Start** — Watch real-time progress with ETA.
+5. **Find your audiobook** — Saved to `~/Documents/Audiobooks/BookTitle-Author/` with everything labeled:
 
-## FAQ
+```
+~/Documents/Audiobooks/
+└── 三体-刘慈欣/                       (Domestic author)
+    ├── 三体-刘慈欣-原始 Source.epub   (Original ebook)
+    ├── 三体-刘慈欣-音频 Audio.m4b     (Audiobook with chapters)
+    ├── 三体-刘慈欣-转换 Text.txt      (Extracted plain text)
+    └── 三体-刘慈欣-封面 Cover.jpg     (Cover image)
 
-**Q: Need internet?**
-A: Yes - Edge TTS calls Microsoft's free service.
+└── Sapiens-Yuval Noah Harari[Israel]/   (Foreign author with country tag)
+    ├── ...-原始 Source.epub
+    ├── ...-音频 Audio.m4b
+    └── ...
+```
 
-**Q: How long does conversion take?**
-A: Roughly 1 minute per 10,000 characters. A 300-page novel (~150K chars) takes ~15 min.
+## 🎙️ Voices
 
-**Q: PDF conversion not working?**
-A: Install [Calibre](https://calibre-ebook.com/download).
+| Language | Voices | Highlights |
+|----------|--------|------------|
+| 🇨🇳 **Chinese (Mandarin/普通话)** | 15+ | Xiaoxiao 晓晓 (warm narrator), Yunyang 云扬 (professional anchor) |
+| 🇨🇳 **Cantonese 粤语** | 3 | HiuGaai, HiuMaan, WanLung |
+| 🇹🇼 **Taiwanese 台湾** | 3 | HsiaoChen, HsiaoYu, YunJhe |
+| 🇺🇸 **English (US)** | 16 | Ava ★, Andrew ★ (newest neural), Jenny, Brian, Aria |
+| 🇬🇧 **English (UK)** | 5 | Sonia, Ryan, Libby, Maisie, Thomas |
+| 🇯🇵 **Japanese 日本語** | 5 | Nanami, Aoi, Keita, Daichi |
+| 🇰🇷 **Korean 한국어** | 4 | SunHi, InJoon, BongJin, Hyunsu |
+| 🇫🇷 **French** | 5 | Vivienne, Remy, Denise, Henri |
+| 🇩🇪 **German** | 5 | Florian, Seraphina, Katja, Conrad |
+| 🇪🇸 **Spanish** | 5 | Ximena, Elvira, Alvaro, Dalia, Jorge |
+| 🇮🇹 **Italian** | 3 | Isabella, Elsa, Diego |
+| 🇵🇹 **Portuguese** | 4 | Francisca, Antonio, Raquel, Duarte |
+| 🇷🇺 **Russian** | 2 | Svetlana, Dmitry |
+| 🇸🇦 **Arabic** | 3 | Zariyah, Hamed, Salma |
+| 🇮🇳 **Hindi** | 2 | Swara, Madhur |
+| 🇻🇳 **Vietnamese** | 2 | HoaiMy, NamMinh |
+| 🇹🇭 **Thai** | 2 | Premwadee, Niwat |
 
-**Q: Can I add more voices?**
-A: Edit the `VOICES` dict in `app.py`. Run `python -m edge_tts --list-voices` for the full list.
+> **★ = Newest "Multilingual" neural voices** — these can speak across multiple languages naturally.
 
-**Q: Why m4b not mp3?**
-A: M4B supports chapter markers - you can navigate chapters in any audiobook player. Choose mp3 in the UI if needed.
+## 🎵 Recommended Audiobook Players
 
-## Alternatives
+| Platform | Player | Type |
+|----------|--------|------|
+| 🪟 Windows / 🍎 Mac / 🐧 Linux | [VLC](https://www.videolan.org/vlc/) | Free, all formats |
+| 🪟 Windows / 🍎 Mac | [foobar2000](https://www.foobar2000.org/) | Free, audiophile |
+| 🍎 Mac / 📱 iOS | Apple Books | Built-in |
+| 📱 iOS | [BookPlayer](https://apps.apple.com/app/bookplayer/id1138219998) | Free, open-source |
+| 📱 iOS | [Prologue](https://apps.apple.com/app/prologue/id1459223267) | Premium |
+| 🤖 Android | [Smart AudioBook Player](https://play.google.com/store/apps/details?id=ak.alizandro.smartaudiobookplayer) | Free |
+| 🤖 Android | [Voice](https://github.com/PaulWoitaschek/Voice) | Free, open-source |
 
-- [audiblez](https://github.com/santinic/audiblez) - Uses Kokoro (local), supports multi-voice
-- [ebook2audiobook](https://github.com/DrewThomasson/ebook2audiobook) - XTTS voice cloning, 16 formats
-- [epub_to_audiobook](https://github.com/p0n1/epub_to_audiobook) - CLI focused, supports Azure/OpenAI TTS
+> 💡 **Tip:** Use M4B format — all audiobook players recognize chapter markers and remember your listening position.
 
-## Contributing
+## 🛠️ How It Works
 
-PRs welcome. Ideas:
-- [ ] Batch queue (multiple books)
-- [ ] Pause/resume conversion
-- [ ] Voice mixing (different characters different voices)
-- [ ] Background music
+```
+┌──────────────┐    ┌─────────────────┐    ┌──────────────┐    ┌────────────┐
+│  Your ebook  │ -> │ Parse + chunk   │ -> │ Edge Neural  │ -> │ FFmpeg     │
+│  epub/pdf/.. │    │ ebooklib/calibre│    │ TTS per chunk│    │ merge+meta │
+└──────────────┘    └─────────────────┘    └──────────────┘    └────────────┘
+                                                  │
+                                                  v
+                                  ┌────────────────────────────┐
+                                  │ M4B with chapters + cover  │
+                                  └────────────────────────────┘
+```
+
+- **No cloud upload** — all processing happens locally; only TTS chunks are streamed through Microsoft Edge.
+- **Resume on crash** — every chapter is cached. If conversion is interrupted, restarting picks up at the last completed chapter.
+- **Smart chunking** — text is split by paragraphs and sentences (max 2000 chars/chunk) for optimal TTS quality.
+- **Metadata extraction** — title, author, cover, chapters all auto-detected from epub.
+
+## ❓ FAQ
+
+<details>
+<summary><b>Does it need internet?</b></summary>
+
+Yes — Edge TTS calls Microsoft's free voice service. Your text is sent to MS for synthesis (same as the browser's built-in "Read aloud"). For sensitive content, see "Roadmap" for upcoming local TTS support.
+</details>
+
+<details>
+<summary><b>How long does conversion take?</b></summary>
+
+Roughly **1 minute per 10,000 characters**. A 300-page novel (~150K chars) takes ~15 minutes. Conversion is parallelized per chunk for speed.
+</details>
+
+<details>
+<summary><b>What if it crashes mid-conversion?</b></summary>
+
+Just restart and reload the same file. VoxBook caches every chapter and resumes automatically — you won't lose progress.
+</details>
+
+<details>
+<summary><b>How do I add more voices?</b></summary>
+
+Run `python -m edge_tts --list-voices` to see all 60+ voices. Edit the `VOICES` dict in `app.py` to add custom entries.
+</details>
+
+<details>
+<summary><b>PDF/DOCX conversion fails?</b></summary>
+
+Install [Calibre](https://calibre-ebook.com/download). It's used as the format converter. Without it, only `.epub` and `.txt` are supported natively.
+</details>
+
+<details>
+<summary><b>Can I run it on a server / NAS?</b></summary>
+
+Yes. Edit the `host="127.0.0.1"` to `host="0.0.0.0"` in `app.py`, then access from any device on your network.
+</details>
+
+<details>
+<summary><b>Where are my settings/cache stored?</b></summary>
+
+`~/Ebook2Audiobook/` (will be renamed to `~/VoxBook/` in next release):
+- `config.json` — your preferences
+- `cache/` — resume data (deleted after successful conversion)
+- `tools/` — auto-downloaded ffmpeg
+- `app.log` — debug log
+</details>
+
+## 🗺️ Roadmap
+
+- [x] Multi-language voices (17 languages)
+- [x] Resume on interrupt
+- [x] Cover embedding in m4b
+- [x] System tray
+- [x] 4 themes
+- [ ] Batch queue (convert multiple books)
+- [ ] Local TTS engine (Kokoro/XTTS) — for full offline + privacy
+- [ ] Voice mixing (different characters use different voices via LLM)
+- [ ] Background music mixing
 - [ ] Mobile-friendly UI
 - [ ] Docker image
-- [ ] Local TTS (Kokoro/XTTS) as alternative
+- [ ] CLI mode
+- [ ] Browser extension (right-click any web article → audiobook)
 
-## License
+Vote / suggest features in [Issues](../../issues)!
 
-MIT - Use freely for personal or commercial purposes.
+## 🤝 Contributing
 
-## Credits
+PRs are very welcome. Areas that need help:
 
-- [edge-tts](https://github.com/rany2/edge-tts) - TTS API wrapper
-- [ebooklib](https://github.com/aerkalov/ebooklib) - epub parsing
-- [Calibre](https://calibre-ebook.com) - format conversion
-- Microsoft Edge Neural TTS - the actual voices
+- 🐛 **Bug reports** — Especially edge-case ebook formats
+- 🌐 **Translations** — UI is currently bilingual (EN/中文); other languages welcome
+- 🎨 **Themes** — Add more color themes
+- 📝 **Voice mappings** — Suggest custom voice display names for your language
+
+```bash
+git clone https://github.com/aimivv0/VoxBook.git
+cd VoxBook
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python app.py
+```
+
+## 🆚 Comparison
+
+| Feature | VoxBook | [audiblez](https://github.com/santinic/audiblez) | [ebook2audiobook](https://github.com/DrewThomasson/ebook2audiobook) | [epub_to_audiobook](https://github.com/p0n1/epub_to_audiobook) |
+|---------|---------|----------|--------------------|--------------------|
+| Web GUI | ✅ | ❌ CLI | ✅ | ❌ CLI |
+| Free voices | ✅ Edge TTS | ✅ Kokoro | ✅ XTTS | ❌ Azure/OpenAI |
+| Languages | **17** | 7 | 100+ | depends on TTS |
+| Resume on crash | ✅ | ❌ | ❌ | ❌ |
+| One-click EXE | ✅ | ❌ | ❌ | ❌ |
+| System tray | ✅ | ❌ | ❌ | ❌ |
+| Themes | ✅ 4 | ❌ | ❌ | ❌ |
+| Auto file organization | ✅ | ❌ | ⚠️ | ⚠️ |
+| Cover embedding | ✅ | ⚠️ | ⚠️ | ⚠️ |
+| Internet needed | ⚠️ Yes | ❌ Local | ❌ Local | ⚠️ Yes |
+
+## 📜 License
+
+[MIT](LICENSE) — **Free for personal AND commercial use.**
+个人和商业用途均免费使用。
+
+## 🙏 Credits
+
+- [edge-tts](https://github.com/rany2/edge-tts) — TTS API wrapper
+- [ebooklib](https://github.com/aerkalov/ebooklib) — epub parsing
+- [Calibre](https://calibre-ebook.com) — format conversion
+- [pystray](https://github.com/moses-palmer/pystray) — system tray
+- Microsoft Edge Neural TTS — the actual voices
+- All the audiobook lovers who tested early versions ❤️
+
+---
+
+<a name="chinese"></a>
+
+## 🇨🇳 中文说明
+
+VoxBook 是一款**一键将电子书转换为有声书**的工具。
+
+### 特色亮点
+
+- 🚀 **零依赖** — 下载即用，无需配置环境
+- 🌍 **17种语言、80+音色** — 中文(普通话/粤语/台湾)、英文、日韩法德西意俄等
+- �� **断点续传** — 大书中途崩溃，重启自动接着转
+- 🎨 **4种主题** — 明亮/暗黑/护眼纸/海洋
+- 📚 **智能解析** — 自动识别书名、作者、章节、字数、预估时长
+- 🗂️ **自动归档** — 输出整齐分类: `书名-作者/` 文件夹包含原始/音频/文本/封面
+- 🖼️ **封面嵌入** — 从 epub 提取封面嵌入 M4B
+- 📊 **实时进度** — 真实百分比 + ETA + 总耗时
+- 🔇 **系统托盘** — 后台静默运行，关浏览器不影响转换
+- �� **历史记录** — 所有转换记录可查
+- 💯 **个人/商业均免费** — MIT 协议
+
+### 快速开始
+
+**方式1 (Windows推荐)：** 在 [Releases](../../releases) 下载 zip → 解压 → 双击 `Run-启动.cmd`
+
+**方式2 (源码)：**
+```bash
+git clone https://github.com/aimivv0/VoxBook.git
+cd VoxBook
+pip install -r requirements.txt
+python app.py
+```
+
+### 使用流程
+
+1. 拖入电子书 (epub/pdf/txt/docx/mobi)
+2. 查看书籍概览
+3. 选语音和语速
+4. 点击开始
+5. 文件保存到 `~/Documents/Audiobooks/书名-作者/`
+
+详细信息请看上方英文版。
+
+---
+
+<p align="center">
+  <b>If VoxBook saves you time, consider giving it a ⭐ star!</b><br>
+  <i>如果 VoxBook 对你有帮助，请点个 ⭐ 支持一下！</i>
+</p>

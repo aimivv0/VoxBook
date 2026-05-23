@@ -1,20 +1,16 @@
-﻿"""PyInstaller build script"""
-import subprocess, sys, os
+﻿"""Build VoxBook EXE"""
+import subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).parent
+PY = ROOT / ".buildvenv" / "Scripts" / "python.exe"
+if not PY.exists():
+    PY = sys.executable
 
-try:
-    import PyInstaller  # noqa
-except ImportError:
-    print("Installing PyInstaller...")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "pyinstaller"])
-
-cmd = [
-    sys.executable, "-m", "PyInstaller",
-    "--name", "Ebook2Audiobook",
-    "--onefile",
-    "--console",  # 保留命令窗口，用户能看到日志
+cmd = [str(PY), "-m", "PyInstaller",
+    "--name", "VoxBook",
+    "--onedir",
+    "--noconsole",
     "--icon", "NONE",
     "--hidden-import", "edge_tts",
     "--hidden-import", "ebooklib",
@@ -23,25 +19,20 @@ cmd = [
     "--hidden-import", "lxml",
     "--hidden-import", "lxml.etree",
     "--hidden-import", "lxml._elementpath",
+    "--hidden-import", "pystray",
+    "--hidden-import", "pystray._win32",
+    "--hidden-import", "PIL",
+    "--hidden-import", "tkinter",
+    "--hidden-import", "tkinter.filedialog",
     "--collect-data", "edge_tts",
     "--collect-data", "ebooklib",
-    "--clean",
-    "--noconfirm",
+    "--clean", "--noconfirm",
     str(ROOT / "app.py"),
 ]
-
-print("Building EXE...")
+print("Building VoxBook...")
 result = subprocess.run(cmd, cwd=str(ROOT))
-
 if result.returncode == 0:
-    exe = ROOT / "dist" / "Ebook2Audiobook.exe"
-    if exe.exists():
-        size_mb = exe.stat().st_size / 1024 / 1024
-        print(f"\n[OK] Built: {exe} ({size_mb:.1f} MB)")
-        print("\nDistribute the entire 'dist' folder.")
-        print("Make sure ffmpeg is in PATH or in dist/ffmpeg/ffmpeg.exe")
-    else:
-        print("[ERROR] EXE not found")
-        sys.exit(1)
-else:
-    sys.exit(result.returncode)
+    folder = ROOT / "dist" / "VoxBook"
+    if folder.exists():
+        size = sum(f.stat().st_size for f in folder.rglob("*") if f.is_file())
+        print(f"\n[OK] Built: {folder} ({size/1024/1024:.1f} MB)")
