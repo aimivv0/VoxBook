@@ -130,9 +130,6 @@ VOICES = {
         "zh-CN-YunxiNeural": "云希 Yunxi - 阳光小说",
         "zh-CN-YunjianNeural": "云健 Yunjian - 激情体育",
         "zh-CN-YunxiaNeural": "云夏 Yunxia - 可爱卡通",
-        "zh-CN-YunfengNeural": "云枫 Yunfeng - 沉稳",
-        "zh-CN-YunhaoNeural": "云皓 Yunhao - 男声广告",
-        "zh-CN-YunzeNeural": "云泽 Yunze - 中年沧桑",
         "zh-TW-YunJheNeural": "云哲 YunJhe - 台湾",
         "zh-HK-WanLungNeural": "万龙 WanLung - 粤语",
     },
@@ -166,16 +163,11 @@ VOICES = {
     },
     "日本語 Japanese": {
         "ja-JP-NanamiNeural": "Nanami - Female warm",
-        "ja-JP-AoiNeural": "Aoi - Female young",
-        "ja-JP-MayuNeural": "Mayu - Female",
         "ja-JP-KeitaNeural": "Keita - Male",
-        "ja-JP-DaichiNeural": "Daichi - Male warm",
     },
     "한국어 Korean": {
         "ko-KR-SunHiNeural": "SunHi - Female",
         "ko-KR-InJoonNeural": "InJoon - Male",
-        "ko-KR-BongJinNeural": "BongJin - Male",
-        "ko-KR-HyunsuNeural": "Hyunsu - Male young",
     },
     "Français French": {
         "fr-FR-VivienneMultilingualNeural": "Vivienne - Multilingual",
@@ -748,7 +740,7 @@ audio{width:100%;margin-top:6px;height:32px}
 <option value="+25%">Fast +25% / 快速</option>
 <option value="+50%">Very Fast +50% / 极快</option>
 </select></div>
-<button class="preview-btn" onclick="previewVoice()">▶ Preview / 试听</button>
+<button class="preview-btn" id="previewBtn" onclick="previewVoice()">▶ Preview / 试听</button>
 <audio id="previewAudio" controls style="display:none"></audio>
 </div>
 
@@ -844,7 +836,38 @@ document.getElementById("biChars").textContent=bi.chars?bi.chars.toLocaleString(
 const mins=Math.round((bi.chars||0)/250);
 document.getElementById("biDuration").textContent=mins>60?Math.floor(mins/60)+"h "+mins%60+"m":mins+" min";
 }})}
-function previewVoice(){const v=document.getElementById("voiceSelect").value;fetch("/preview?voice="+v).then(r=>r.blob()).then(b=>{const a=document.getElementById("previewAudio");a.src=URL.createObjectURL(b);a.style.display="block";a.play()})}
+function previewVoice(){
+const v=document.getElementById("voiceSelect").value;
+const r=document.getElementById("rateSelect").value;
+const btn=document.getElementById("previewBtn");
+const audio=document.getElementById("previewAudio");
+const originalText=btn.innerHTML;
+btn.disabled=true;
+btn.innerHTML="⏳ 加载中... / Loading...";
+audio.style.display="none";
+fetch("/preview?voice="+encodeURIComponent(v)+"&rate="+encodeURIComponent(r))
+.then(async r=>{
+if(!r.ok){
+const err=await r.json().catch(()=>({error:"试听失败 / Preview failed"}));
+throw new Error(err.error||"HTTP "+r.status);
+}
+return r.blob();
+})
+.then(b=>{
+if(b.size<200){throw new Error("音频文件为空 / Empty audio");}
+audio.src=URL.createObjectURL(b);
+audio.style.display="block";
+audio.play().catch(e=>showToast("播放失败: "+e.message));
+btn.disabled=false;
+btn.innerHTML=originalText;
+})
+.catch(e=>{
+btn.disabled=false;
+btn.innerHTML=originalText;
+showToast("试听失败: "+e.message+" (可能网络问题，请重试)");
+console.error("Preview error:",e);
+});
+}
 function startConversion(){if(!selectedFile){showToast("Please select a file first / 请先选择文件");return}
 const btn=document.getElementById("convertBtn"),pp=document.getElementById("progressPanel"),rs=document.getElementById("resultBox");
 btn.disabled=true;btn.textContent="Converting... / 转换中...";pp.classList.add("active");rs.classList.remove("active");
@@ -942,6 +965,7 @@ def analyze():
 @app.route("/preview")
 def preview():
     voice = request.args.get("voice", "zh-CN-XiaoxiaoNeural")
+    rate = request.args.get("rate", "+0%")
     if "zh-" in voice: text = "你好，这是音色试听。"
     elif "ja-" in voice: text = "こんにちは、これは音声プレビューです。"
     elif "ko-" in voice: text = "안녕하세요, 이것은 음성 미리보기입니다."
@@ -958,12 +982,27 @@ def preview():
     else: text = "Hello, this is a voice preview."
     tmp = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
     tmp.close()
-    try:
-        loop = asyncio.new_event_loop()
-        loop.run_until_complete(tts_to_file(text, voice, tmp.name))
-        return send_file(tmp.name, mimetype="audio/mpeg")
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    last_err = None
+    print(f"[Preview] voice={voice}, rate={rate}")
+    # 重试 3 次，规避偶发的 Edge-TTS 限流/超时
+    for attempt in range(3):
+        try:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(tts_to_file(text, voice, tmp.name, rate=rate))
+            loop.close()
+            if os.path.exists(tmp.name) and os.path.getsize(tmp.name) > 200:
+                print(f"[Preview] OK ({os.path.getsize(tmp.name)} bytes)")
+                return send_file(tmp.name, mimetype="audio/mpeg")
+            last_err = "生成的音频为空"
+        except Exception as e:
+            last_err = str(e)
+            print(f"[Preview] attempt {attempt+1} failed: {e}")
+            if attempt < 2:
+                time.sleep(1.5)
+    err_msg = f"Edge-TTS 服务暂时无响应，请稍后重试。详情: {last_err}"
+    print(f"[Preview] FAILED: {err_msg}")
+    return jsonify({"error": err_msg}), 500
 
 @app.route("/convert", methods=["POST"])
 def convert():
